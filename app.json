@@ -13,7 +13,7 @@
                             },
                  "ios":  {
                              "buildNumber":  "1",
-                             "bundleIdentifier":  "org.hihired.clawpool",
+                             "bundleIdentifier":  "com.clawpool.app",
                              "supportsTablet":  true,
                              "infoPlist":  {
                                                "ITSAppUsesNonExemptEncryption":  false
@@ -28,7 +28,7 @@
                                                       "backgroundImage":  "./assets/android-icon-background.png",
                                                       "foregroundImage":  "./assets/android-icon-foreground.png"
                                                   },
-                                 "package":  "org.hihired.clawpool"
+                                 "package":  "com.clawpool.app"
                              },
                  "web":  {
                              "favicon":  "./assets/favicon.png"

@@ -1,30 +1,47 @@
 {
-  "expo": {
-    "name": "clawpool",
-    "slug": "clawpool",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
-      },
-      "predictiveBackGestureEnabled": false
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
-  }
+    "expo":  {
+                 "name":  "ClawPool",
+                 "slug":  "clawpool",
+                 "version":  "1.0.0",
+                 "orientation":  "portrait",
+                 "icon":  "./assets/icon.png",
+                 "userInterfaceStyle":  "dark",
+                 "splash":  {
+                                "image":  "./assets/splash-icon.png",
+                                "resizeMode":  "contain",
+                                "backgroundColor":  "#0F0F1A"
+                            },
+                 "ios":  {
+                             "buildNumber":  "1",
+                             "bundleIdentifier":  "org.hihired.clawpool",
+                             "supportsTablet":  true,
+                             "infoPlist":  {
+                                               "ITSAppUsesNonExemptEncryption":  false
+                                           }
+                         },
+                 "android":  {
+                                 "versionCode":  1,
+                                 "predictiveBackGestureEnabled":  false,
+                                 "adaptiveIcon":  {
+                                                      "monochromeImage":  "./assets/android-icon-monochrome.png",
+                                                      "backgroundColor":  "#0F0F1A",
+                                                      "backgroundImage":  "./assets/android-icon-background.png",
+                                                      "foregroundImage":  "./assets/android-icon-foreground.png"
+                                                  },
+                                 "package":  "org.hihired.clawpool"
+                             },
+                 "web":  {
+                             "favicon":  "./assets/favicon.png"
+                         },
+                 "plugins":  [
+
+                             ],
+                 "scheme":  "clawpool",
+                 "extra":  {
+                               "eas":  {
+                                           "projectId":  "9c1faa92-10d6-4f2f-93a6-be3e38bf400a"
+                                       }
+                           },
+                 "owner":  "flychicken"
+             }
 }

@@ -1,0 +1,28 @@
+{
+    "submit":  {
+                   "production":  {
+                                      "ios":  {
+                                                  "appleTeamId":  "L2V2MW42J3",
+                                                  "appleId":  "yuhanshishuai@hotmail.com"
+                                              }
+                                  }
+               },
+    "cli":  {
+                "version":  "\u003e= 18.0.0",
+                "appVersionSource":  "remote"
+            },
+    "build":  {
+                  "production":  {
+                                     "autoIncrement":  true,
+                                     "ios":  {
+                                                 "buildConfiguration":  "Release"
+                                             },
+                                     "env":  {
+                                                 "EXPO_PUBLIC_API_URL":  "https://clawpool.hihired.org"
+                                             },
+                                     "android":  {
+                                                     "buildType":  "app-bundle"
+                                                 }
+                                 }
+              }
+}

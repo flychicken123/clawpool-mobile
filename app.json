@@ -18,11 +18,7 @@
                              "infoPlist":  {
                                                "ITSAppUsesNonExemptEncryption":  false
                                            },
-                             "entitlements":  {
-                                                  "com.apple.developer.in-app-payments":  [
-                                                                                              "merchant.com.clawpool"
-                                                                                          ]
-                                              }
+                             "entitlements":  {}
                          },
                  "android":  {
                                  "versionCode":  1,

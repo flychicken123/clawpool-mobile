@@ -14,7 +14,7 @@
                  "ios":  {
                              "buildNumber":  "3",
                              "bundleIdentifier":  "com.clawpool.app",
-                             "supportsTablet":  true,
+                             "supportsTablet":  false,
                              "infoPlist":  {
                                                "ITSAppUsesNonExemptEncryption":  false
                                            },

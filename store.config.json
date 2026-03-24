@@ -1,0 +1,26 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "copyright": "2026 Han Yu",
+    "categories": ["PRODUCTIVITY"],
+    "info": {
+      "en-US": {
+        "title": "ClawPool - Personal AI",
+        "subtitle": "Your personal AI assistant",
+        "description": "ClawPool gives you your very own personal AI assistant — always available, always learning, just for you.\n\nPowered by Google Gemini, your AI can:\n• Answer any question\n• Help write emails and content\n• Assist with coding and research\n• Remember your preferences\n\nEach user gets their own dedicated AI instance — completely private.\n\nFree trial included. Subscribe for unlimited access.",
+        "privacyPolicyUrl": "https://clawpool.hihired.org/privacy",
+        "keywords": ["AI", "chatbot", "gemini", "personal AI", "chat", "GPT", "assistant", "productivity"]
+      }
+    },
+    "review": {
+      "email": "yuhanshishuai@hotmail.com",
+      "firstName": "Han",
+      "lastName": "Yu",
+      "phone": "+1 555 000 0000",
+      "notes": "This is an AI chat app. No special credentials needed. Register with any email to test."
+    },
+    "version": {
+      "releaseType": "AFTER_APPROVAL"
+    }
+  }
+}

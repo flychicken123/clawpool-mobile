@@ -175,3 +175,14 @@ export async function subscribeToPlan(
   });
   return { checkout_url: res.data?.url, url: res.data?.url };
 }
+
+export async function verifyIAPReceipt(
+  receipt: string,
+  productId: string,
+): Promise<{ success: boolean; plan: string }> {
+  const res = await request<{ success: boolean; plan: string }>('/api/billing/verify-iap', {
+    method: 'POST',
+    body: JSON.stringify({ receipt, productId }),
+  });
+  return res;
+}

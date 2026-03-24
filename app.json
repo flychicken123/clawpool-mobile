@@ -1,6 +1,6 @@
 {
     "expo":  {
-                 "name":  "ClawPool",
+                 "name":  "MyClaws",
                  "slug":  "clawpool",
                  "version":  "1.0.0",
                  "orientation":  "portrait",
@@ -12,12 +12,17 @@
                                 "backgroundColor":  "#0F0F1A"
                             },
                  "ios":  {
-                             "buildNumber":  "1",
+                             "buildNumber":  "3",
                              "bundleIdentifier":  "com.clawpool.app",
                              "supportsTablet":  true,
                              "infoPlist":  {
                                                "ITSAppUsesNonExemptEncryption":  false
-                                           }
+                                           },
+                             "entitlements":  {
+                                                  "com.apple.developer.in-app-payments":  [
+                                                                                              "merchant.com.clawpool"
+                                                                                          ]
+                                              }
                          },
                  "android":  {
                                  "versionCode":  1,

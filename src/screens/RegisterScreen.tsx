@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { register } from '../services/api';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import { register, appleSignIn } from '../services/api';
 import { saveToken } from '../services/auth';
 
 type Props = {
@@ -40,6 +41,33 @@ export default function RegisterScreen({ navigation, onAuth }: Props) {
       onAuth();
     } catch (e: any) {
       setError(e.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    setError('');
+    setLoading(true);
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      const fullName = [credential.fullName?.givenName, credential.fullName?.familyName]
+        .filter(Boolean)
+        .join(' ');
+
+      const res = await appleSignIn(credential.identityToken!, fullName);
+      await saveToken(res.token);
+      onAuth();
+    } catch (e: any) {
+      if (e.code !== 'ERR_REQUEST_CANCELED') {
+        setError(e.message || 'Apple Sign In failed');
+      }
     } finally {
       setLoading(false);
     }
@@ -100,6 +128,16 @@ export default function RegisterScreen({ navigation, onAuth }: Props) {
             )}
           </TouchableOpacity>
 
+          {Platform.OS === 'ios' && (
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
+              buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
+              cornerRadius={14}
+              style={styles.appleButton}
+              onPress={handleAppleSignIn}
+            />
+          )}
+
           <TouchableOpacity onPress={() => navigation.navigate('Login')}>
             <Text style={styles.link}>Already have an account? Sign In</Text>
           </TouchableOpacity>
@@ -142,5 +180,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   buttonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
+  appleButton: {
+    width: '100%' as any,
+    height: 50,
+    marginBottom: 20,
+  },
   link: { color: '#7C3AED', fontSize: 15, textAlign: 'center' },
 });

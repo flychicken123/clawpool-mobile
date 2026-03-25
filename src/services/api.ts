@@ -176,6 +176,21 @@ export async function subscribeToPlan(
   return { checkout_url: res.data?.url, url: res.data?.url };
 }
 
+export async function appleSignIn(
+  identityToken: string,
+  fullName: string,
+): Promise<AuthResponse> {
+  const res = await request<{ success: boolean; data: AuthResponse }>('/api/auth/apple', {
+    method: 'POST',
+    body: JSON.stringify({ identityToken, fullName }),
+  });
+  return res.data;
+}
+
+export async function deleteAccount(): Promise<{ success: boolean; message: string }> {
+  return request('/api/auth/account', { method: 'DELETE' });
+}
+
 export async function verifyIAPReceipt(
   receipt: string,
   productId: string,

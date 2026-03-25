@@ -94,8 +94,16 @@ export default function PlansScreen({ navigation }: Props) {
     setError('');
 
     try {
-      // iOS: use Apple IAP
-      if (Platform.OS === 'ios' && iapAvailable) {
+      // iOS: always use Apple IAP, never Stripe
+      if (Platform.OS === 'ios') {
+        if (!iapAvailable) {
+          Alert.alert(
+            'Subscriptions Unavailable',
+            'Subscriptions require Apple In-App Purchase. Please use a physical iOS device to subscribe.',
+          );
+          return;
+        }
+
         const productId = PRODUCT_IDS[planName as keyof typeof PRODUCT_IDS];
         if (!productId) throw new Error('Unknown plan');
 
@@ -105,11 +113,11 @@ export default function PlansScreen({ navigation }: Props) {
         await verifyIAPReceipt(receipt, productId);
 
         setCurrentPlan(planName);
-        Alert.alert('Success', `You're now on the ${planName} plan! 🎉`);
+        Alert.alert('Success', `You're now on the ${planName} plan!`);
         return;
       }
 
-      // Fallback: Stripe web checkout (Android + web, or if IAP unavailable on iOS)
+      // Android/web: Stripe web checkout
       const res = await subscribeToPlan(planName);
       const url = res?.checkout_url || (res as any)?.data?.checkout_url;
       if (!url) {

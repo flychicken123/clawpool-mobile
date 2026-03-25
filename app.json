@@ -16,8 +16,10 @@
                              "bundleIdentifier":  "com.clawpool.app",
                              "supportsTablet":  false,
                              "infoPlist":  {
-                                               "ITSAppUsesNonExemptEncryption":  false
+                                               "ITSAppUsesNonExemptEncryption":  false,
+                                              "NSCameraUsageDescription": "MyClaws uses your camera to let you take photos for your profile picture or to share images with your AI assistant during conversations."
                                            },
+                             "usesAppleSignIn": true,
                              "entitlements":  {}
                          },
                  "android":  {
@@ -35,6 +37,7 @@
                              "favicon":  "./assets/favicon.png"
                          },
                  "plugins":  [
+                                "expo-apple-authentication"
 
                              ],
                  "scheme":  "clawpool",

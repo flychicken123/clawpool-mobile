@@ -20,7 +20,10 @@
       "notes": "This is an AI chat app. No special credentials needed. Register with any email to test."
     },
     "version": {
-      "releaseType": "AFTER_APPROVAL"
+      "releaseType": "AFTER_APPROVAL",
+      "whatsNew": {
+        "en-US": "Initial release."
+      }
     }
   }
 }

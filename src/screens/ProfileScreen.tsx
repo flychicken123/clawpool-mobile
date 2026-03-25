@@ -6,10 +6,11 @@ import {
   StyleSheet,
   ActivityIndicator,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { getMe, getUsage, type UsageInfo, type User } from '../services/api';
+import { getMe, getUsage, deleteAccount, type UsageInfo, type User } from '../services/api';
 import { removeToken } from '../services/auth';
 import TokenProgress from '../components/TokenProgress';
 
@@ -42,6 +43,42 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
   const handleLogout = async () => {
     await removeToken();
     onLogout();
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              'Final Confirmation',
+              'This will permanently delete your account, data, and cancel any active subscriptions.',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Delete Forever',
+                  style: 'destructive',
+                  onPress: async () => {
+                    try {
+                      await deleteAccount();
+                      await removeToken();
+                      onLogout();
+                    } catch (e: any) {
+                      Alert.alert('Error', e.message || 'Failed to delete account');
+                    }
+                  },
+                },
+              ],
+            );
+          },
+        },
+      ],
+    );
   };
 
   if (loading) {
@@ -97,6 +134,10 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Sign Out</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAccount}>
+          <Text style={styles.deleteText}>Delete Account</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -149,4 +190,14 @@ const styles = StyleSheet.create({
     borderColor: '#2A2A3C',
   },
   logoutText: { color: '#EF4444', fontSize: 16, fontWeight: '600' },
+  deleteButton: {
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: 'center' as const,
+    marginTop: 12,
+    backgroundColor: 'rgba(239,68,68,0.1)',
+    borderWidth: 1,
+    borderColor: '#EF4444',
+  },
+  deleteText: { color: '#EF4444', fontSize: 16, fontWeight: '600' },
 });

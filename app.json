@@ -17,7 +17,8 @@
                              "supportsTablet":  false,
                              "infoPlist":  {
                                                "ITSAppUsesNonExemptEncryption":  false,
-                                              "NSCameraUsageDescription": "MyClaws uses your camera to let you take photos for your profile picture or to share images with your AI assistant during conversations."
+                                               "NSCameraUsageDescription": "MyClaws uses your camera to let you take photos for your profile picture or to share images with your AI assistant during conversations.",
+                                               "NSPhotoLibraryUsageDescription": "MyClaws uses your photo library so you can choose an existing photo for your profile picture or share images with your AI assistant during conversations. For example, you can select a photo from your library to set as your avatar."
                                            },
                              "usesAppleSignIn": true,
                              "entitlements":  {

@@ -163,15 +163,16 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#7C3AED',
     borderRadius: 14,
-    paddingVertical: 16,
+    height: 54,
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 8,
     marginBottom: 20,
   },
   buttonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
   appleButton: {
     width: '100%' as any,
-    height: 50,
+    height: 54,
     marginBottom: 20,
   },
   link: { color: '#7C3AED', fontSize: 15, textAlign: 'center' },

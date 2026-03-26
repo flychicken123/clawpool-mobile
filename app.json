@@ -20,7 +20,9 @@
                                               "NSCameraUsageDescription": "MyClaws uses your camera to let you take photos for your profile picture or to share images with your AI assistant during conversations."
                                            },
                              "usesAppleSignIn": true,
-                             "entitlements":  {}
+                             "entitlements":  {
+                                               "com.apple.developer.applesignin": ["Default"]
+                                             }
                          },
                  "android":  {
                                  "versionCode":  1,

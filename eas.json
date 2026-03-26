@@ -16,7 +16,8 @@
                   "production":  {
                                      "autoIncrement":  true,
                                      "ios":  {
-                                                 "buildConfiguration":  "Release"
+                                                 "buildConfiguration":  "Release",
+                                                 "credentialsSource":  "remote"
                                              },
                                      "env":  {
                                                  "EXPO_PUBLIC_API_URL":  "https://clawpool.hihired.org"

@@ -11,6 +11,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Linking } from 'react-native';
+
+const PRIVACY_POLICY_URL = 'https://clawpool.hihired.org/privacy';
+const TERMS_URL = 'https://clawpool.hihired.org/terms';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { IAPItemDetails } from 'expo-in-app-purchases';
 import {
@@ -184,10 +187,22 @@ export default function PlansScreen({ navigation }: Props) {
         })}
 
         {Platform.OS === 'ios' && (
-          <Text style={styles.iapNote}>
-            Payments processed by Apple. Subscriptions auto-renew monthly.
-            Manage in Settings → Apple ID → Subscriptions.
-          </Text>
+          <>
+            <Text style={styles.iapNote}>
+              Subscriptions auto-renew monthly unless cancelled at least 24 hours before the end of the current period.
+              Manage or cancel in Settings → Apple ID → Subscriptions.
+              Payment will be charged to your Apple ID account at confirmation of purchase.
+            </Text>
+            <View style={styles.legalLinks}>
+              <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
+                <Text style={styles.legalLink}>Privacy Policy</Text>
+              </TouchableOpacity>
+              <Text style={styles.legalSep}> · </Text>
+              <TouchableOpacity onPress={() => Linking.openURL(TERMS_URL)}>
+                <Text style={styles.legalLink}>Terms of Use</Text>
+              </TouchableOpacity>
+            </View>
+          </>
         )}
       </ScrollView>
     </SafeAreaView>
@@ -215,5 +230,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 24,
     lineHeight: 16,
+    marginBottom: 12,
+  },
+  legalLinks: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  legalLink: {
+    fontSize: 12,
+    color: '#7C3AED',
+    textDecorationLine: 'underline',
+  },
+  legalSep: {
+    fontSize: 12,
+    color: '#666680',
   },
 });

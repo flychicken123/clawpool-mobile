@@ -13,6 +13,16 @@
                 "appVersionSource":  "remote"
             },
     "build":  {
+                  "preview":  {
+                                  "distribution":  "internal",
+                                  "ios":  {
+                                              "simulator":  false,
+                                              "credentialsSource":  "remote"
+                                          },
+                                  "env":  {
+                                              "EXPO_PUBLIC_API_URL":  "http://192.168.68.55:3000"
+                                          }
+                              },
                   "production":  {
                                      "autoIncrement":  true,
                                      "ios":  {

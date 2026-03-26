@@ -38,7 +38,7 @@ export default function WelcomeScreen({ navigation, onAuth }: Props) {
 
       const res = await appleSignIn(credential.identityToken!, fullName);
       await saveToken(res.token);
-      onAuth();
+      onAuth(res.user.container_status === 'running');
     } catch (e: any) {
       if (e.code !== 'ERR_REQUEST_CANCELED') {
         Alert.alert('Apple Sign-In Failed', e.message || 'Please try again.');

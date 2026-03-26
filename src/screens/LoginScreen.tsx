@@ -37,7 +37,7 @@ export default function LoginScreen({ navigation, onAuth }: Props) {
     try {
       const res = await login(email, password);
       await saveToken(res.token);
-      onAuth();
+      onAuth(res.user.container_status === 'running');
     } catch (e: any) {
       setError(e.message || 'Login failed');
     } finally {
@@ -62,7 +62,7 @@ export default function LoginScreen({ navigation, onAuth }: Props) {
 
       const res = await appleSignIn(credential.identityToken!, fullName);
       await saveToken(res.token);
-      onAuth();
+      onAuth(res.user.container_status === 'running');
     } catch (e: any) {
       if (e.code !== 'ERR_REQUEST_CANCELED') {
         setError(e.message || 'Apple Sign In failed');

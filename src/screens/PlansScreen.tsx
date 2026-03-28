@@ -63,12 +63,11 @@ export default function PlansScreen({ navigation }: Props) {
         try {
           await initIAP();
           const products = await getProducts();
-          if (products && products.length > 0) {
-            setIapProducts(products);
-            setIapAvailable(true);
-          }
-        } catch {
-          // IAP not available (Expo Go, simulator, etc.) — fall back to web checkout
+          setIapProducts(products ?? []);
+          setIapAvailable((products ?? []).length > 0);
+        } catch (iapErr: any) {
+          console.warn('[IAP] Init failed:', iapErr?.message);
+          // IAP unavailable — still show plans, purchases will surface Apple's own error
           setIapAvailable(false);
         }
       }
@@ -99,16 +98,20 @@ export default function PlansScreen({ navigation }: Props) {
     try {
       // iOS: always use Apple IAP, never Stripe
       if (Platform.OS === 'ios') {
-        if (!iapAvailable) {
-          Alert.alert(
-            'Subscriptions Unavailable',
-            'Subscriptions require Apple In-App Purchase. Please use a physical iOS device to subscribe.',
-          );
-          return;
-        }
-
         const productId = PRODUCT_IDS[planName as keyof typeof PRODUCT_IDS];
         if (!productId) throw new Error('Unknown plan');
+
+        // If products not loaded yet, attempt IAP init inline
+        if (!iapAvailable) {
+          try {
+            await initIAP();
+            const products = await getProducts();
+            setIapProducts(products ?? []);
+            setIapAvailable((products ?? []).length > 0);
+          } catch (iapErr: any) {
+            console.warn('[IAP] Retry init failed:', iapErr?.message);
+          }
+        }
 
         const receipt = await purchasePlan(productId);
 

@@ -26,9 +26,10 @@ type Message = {
 
 type Props = {
   navigation: StackNavigationProp<any>;
+  aiConsented?: boolean;
 };
 
-export default function ChatScreen({ navigation }: Props) {
+export default function ChatScreen({ navigation, aiConsented }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
@@ -112,7 +113,16 @@ export default function ChatScreen({ navigation }: Props) {
       const aiMsg: Message = { id: genId(), text: res.reply, isUser: false };
       setMessages((prev) => [...prev, aiMsg]);
     } catch (e: any) {
-      if (e.status === 402) {
+      if (e.status === 451) {
+        Alert.alert(
+          'Consent Required',
+          'You need to consent to AI data sharing before using chat. You can do this from the AI Data Sharing screen in your Profile.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Go to Settings', onPress: () => navigation.navigate('AIDataSharing') },
+          ],
+        );
+      } else if (e.status === 402) {
         Alert.alert(
           'Trial Ended',
           'Your free trial has ended. Upgrade to continue chatting.',
@@ -141,6 +151,18 @@ export default function ChatScreen({ navigation }: Props) {
           <Text style={styles.headerAction}>{'\u2699'}</Text>
         </TouchableOpacity>
       </View>
+
+      {aiConsented === false && (
+        <TouchableOpacity
+          style={styles.consentBanner}
+          onPress={() => navigation.navigate('AIDataSharing')}
+        >
+          <Text style={styles.consentBannerText}>
+            AI chat is disabled — consent to data sharing required.{' '}
+            <Text style={styles.consentBannerLink}>Enable</Text>
+          </Text>
+        </TouchableOpacity>
+      )}
 
       <KeyboardAvoidingView
         style={styles.flex}
@@ -225,6 +247,15 @@ const styles = StyleSheet.create({
   },
   headerTitle: { color: '#FFFFFF', fontSize: 18, fontWeight: '700' },
   headerAction: { color: '#A0A0B8', fontSize: 22 },
+  consentBanner: {
+    backgroundColor: 'rgba(239,68,68,0.1)',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EF4444',
+  },
+  consentBannerText: { color: '#EF4444', fontSize: 13, textAlign: 'center' },
+  consentBannerLink: { fontWeight: '700', textDecorationLine: 'underline' as const },
   messageList: { paddingVertical: 12, flexGrow: 1 },
   emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 120 },
   emptyText: { color: '#6B6B80', fontSize: 16 },

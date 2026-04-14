@@ -187,6 +187,35 @@ export async function appleSignIn(
   return res.data;
 }
 
+export interface ConsentStatus {
+  consented: boolean;
+  consent_version: string | null;
+  accepted_at: string | null;
+  revoked_at: string | null;
+  current_version: string;
+}
+
+export async function getConsentStatus(): Promise<ConsentStatus> {
+  const res = await request<{ success: boolean; data: ConsentStatus }>('/api/privacy/consent');
+  return res.data;
+}
+
+export async function acceptConsent(): Promise<{ consented: boolean; consent_version: string }> {
+  const res = await request<{ success: boolean; data: { consented: boolean; consent_version: string } }>(
+    '/api/privacy/consent',
+    { method: 'POST', body: JSON.stringify({ action: 'accept' }) },
+  );
+  return res.data;
+}
+
+export async function revokeConsent(): Promise<{ consented: boolean }> {
+  const res = await request<{ success: boolean; data: { consented: boolean } }>(
+    '/api/privacy/consent',
+    { method: 'POST', body: JSON.stringify({ action: 'revoke' }) },
+  );
+  return res.data;
+}
+
 export async function deleteAccount(): Promise<{ success: boolean; message: string }> {
   return request('/api/auth/account', { method: 'DELETE' });
 }

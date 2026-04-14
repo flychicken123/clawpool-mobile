@@ -8,7 +8,7 @@ import { saveToken } from '../services/auth';
 
 type Props = {
   navigation: StackNavigationProp<any>;
-  onAuth: () => void;
+  onAuth: (isContainerReady?: boolean) => void;
 };
 
 export default function WelcomeScreen({ navigation, onAuth }: Props) {

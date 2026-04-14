@@ -2,9 +2,10 @@ import * as InAppPurchases from 'expo-in-app-purchases';
 import { Platform } from 'react-native';
 
 // Product IDs must match what's registered in App Store Connect
+// Bundle ID is com.clawpool.app, so product IDs follow the same prefix
 export const PRODUCT_IDS = {
-  basic: 'org.hihired.clawpool.basic',
-  pro: 'org.hihired.clawpool.pro',
+  basic: 'com.clawpool.app.basic',
+  pro: 'com.clawpool.app.pro',
 };
 
 export type IAPProduct = {

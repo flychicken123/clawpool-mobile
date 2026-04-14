@@ -102,15 +102,26 @@ export default function PlansScreen({ navigation }: Props) {
         if (!productId) throw new Error('Unknown plan');
 
         // If products not loaded yet, attempt IAP init inline
+        let finalIapAvailable = iapAvailable;
         if (!iapAvailable) {
           try {
             await initIAP();
             const products = await getProducts();
-            setIapProducts(products ?? []);
-            setIapAvailable((products ?? []).length > 0);
+            const prods = products ?? [];
+            setIapProducts(prods);
+            finalIapAvailable = prods.length > 0;
+            setIapAvailable(finalIapAvailable);
           } catch (iapErr: any) {
             console.warn('[IAP] Retry init failed:', iapErr?.message);
           }
+        }
+
+        if (!finalIapAvailable) {
+          Alert.alert(
+            'Subscription Unavailable',
+            'In-App Purchases are not available on this device. Please ensure you are signed in to the App Store and try again.',
+          );
+          return;
         }
 
         const receipt = await purchasePlan(productId);
@@ -190,23 +201,22 @@ export default function PlansScreen({ navigation }: Props) {
         })}
 
         {Platform.OS === 'ios' && (
-          <>
-            <Text style={styles.iapNote}>
-              Subscriptions auto-renew monthly unless cancelled at least 24 hours before the end of the current period.
-              Manage or cancel in Settings → Apple ID → Subscriptions.
-              Payment will be charged to your Apple ID account at confirmation of purchase.
-            </Text>
-            <View style={styles.legalLinks}>
-              <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
-                <Text style={styles.legalLink}>Privacy Policy</Text>
-              </TouchableOpacity>
-              <Text style={styles.legalSep}> · </Text>
-              <TouchableOpacity onPress={() => Linking.openURL(TERMS_URL)}>
-                <Text style={styles.legalLink}>Terms of Use</Text>
-              </TouchableOpacity>
-            </View>
-          </>
+          <Text style={styles.iapNote}>
+            Subscriptions auto-renew monthly unless cancelled at least 24 hours before the end of the current period.
+            Manage or cancel in Settings → Apple ID → Subscriptions.
+            Payment will be charged to your Apple ID account at confirmation of purchase.
+          </Text>
         )}
+
+        <View style={styles.legalLinks}>
+          <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
+            <Text style={styles.legalLink}>Privacy Policy</Text>
+          </TouchableOpacity>
+          <Text style={styles.legalSep}> · </Text>
+          <TouchableOpacity onPress={() => Linking.openURL(TERMS_URL)}>
+            <Text style={styles.legalLink}>Terms of Use</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

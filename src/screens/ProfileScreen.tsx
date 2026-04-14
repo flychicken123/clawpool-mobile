@@ -10,8 +10,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { StackNavigationProp } from '@react-navigation/stack';
+import { Linking } from 'react-native';
 import { getMe, getUsage, deleteAccount, type UsageInfo, type User } from '../services/api';
 import { removeToken } from '../services/auth';
+
+const PRIVACY_POLICY_URL = 'https://clawpool.hihired.org/privacy';
+const TERMS_URL = 'https://clawpool.hihired.org/terms';
 import TokenProgress from '../components/TokenProgress';
 
 type Props = {
@@ -39,6 +43,9 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
     };
     load();
   }, []);
+
+  const handleAIDataSharing = () => navigation.navigate('AIDataSharing');
+  const handlePrivacy = () => Linking.openURL(PRIVACY_POLICY_URL);
 
   const handleLogout = async () => {
     await removeToken();
@@ -131,6 +138,14 @@ export default function ProfileScreen({ navigation, onLogout }: Props) {
           <Text style={styles.upgradeText}>Upgrade Plan</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity style={styles.aiDataButton} onPress={handleAIDataSharing}>
+          <Text style={styles.aiDataText}>AI Data Sharing</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.privacyButton} onPress={handlePrivacy}>
+          <Text style={styles.privacyText}>Privacy Policy</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Sign Out</Text>
         </TouchableOpacity>
@@ -182,6 +197,24 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   upgradeText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
+  aiDataButton: {
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: 'center' as const,
+    borderWidth: 1,
+    borderColor: '#7C3AED',
+    marginBottom: 12,
+  },
+  aiDataText: { color: '#7C3AED', fontSize: 16, fontWeight: '600' },
+  privacyButton: {
+    borderRadius: 14,
+    paddingVertical: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#2A2A3C',
+    marginBottom: 12,
+  },
+  privacyText: { color: '#A0A0B8', fontSize: 16, fontWeight: '600' },
   logoutButton: {
     borderRadius: 14,
     paddingVertical: 16,

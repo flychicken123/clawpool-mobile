@@ -103,11 +103,13 @@ export default function PlansScreen({ navigation }: Props) {
 
         // If products not loaded yet, attempt IAP init inline
         let finalIapAvailable = iapAvailable;
+        let availableProducts = iapProducts;
         if (!iapAvailable) {
           try {
             await initIAP();
             const products = await getProducts();
             const prods = products ?? [];
+            availableProducts = prods;
             setIapProducts(prods);
             finalIapAvailable = prods.length > 0;
             setIapAvailable(finalIapAvailable);
@@ -116,10 +118,11 @@ export default function PlansScreen({ navigation }: Props) {
           }
         }
 
-        if (!finalIapAvailable) {
+        const matchingProduct = availableProducts.find((p) => p.productId === productId);
+        if (!finalIapAvailable || !matchingProduct) {
           Alert.alert(
             'Subscription Unavailable',
-            'In-App Purchases are not available on this device. Please ensure you are signed in to the App Store and try again.',
+            'This subscription product is not currently available from Apple on this device or review account. Please confirm the App Store account is active in sandbox and the IAP product is configured in App Store Connect.',
           );
           return;
         }
@@ -144,7 +147,9 @@ export default function PlansScreen({ navigation }: Props) {
       await Linking.openURL(url);
     } catch (e: any) {
       if (e?.message === 'Purchase cancelled') {
-        // User cancelled — no alert needed
+        // User cancelled, no alert needed
+      } else if (e?.message?.includes('timed out')) {
+        Alert.alert('Purchase Timed Out', 'Apple did not return a purchase result in time. Please try again. If this is App Review, verify the sandbox review account can access the subscription product.');
       } else {
         Alert.alert('Error', e.message || 'Failed to start checkout');
       }

@@ -29,7 +29,7 @@ import {
   purchasePlan,
   disconnectIAP,
   PRODUCT_IDS,
-  productIdToPlan,
+  normalizePlanName,
 } from '../services/iap';
 import PlanCard from '../components/PlanCard';
 
@@ -45,13 +45,14 @@ export default function PlansScreen({ navigation }: Props) {
   const [error, setError] = useState('');
   const [iapProducts, setIapProducts] = useState<IAPItemDetails[]>([]);
   const [iapAvailable, setIapAvailable] = useState(false);
+  const [iapLoading, setIapLoading] = useState(Platform.OS === 'ios');
 
   useEffect(() => {
     const load = async () => {
       try {
         const [plansData, meData] = await Promise.all([getPlans(), getMe()]);
-        setPlans(plansData);
-        setCurrentPlan(meData.user.plan || 'Free');
+        setPlans(plansData.map((plan) => ({ ...plan, name: normalizePlanName(plan.name) || String(plan.name).toLowerCase() })));
+        setCurrentPlan(normalizePlanName(meData.user.plan) || 'free');
       } catch (e: any) {
         setError(e.message || 'Failed to load plans');
       } finally {
@@ -60,6 +61,7 @@ export default function PlansScreen({ navigation }: Props) {
 
       // Try to load Apple IAP products (iOS only)
       if (Platform.OS === 'ios') {
+        setIapLoading(true);
         try {
           await initIAP();
           const products = await getProducts();
@@ -67,8 +69,9 @@ export default function PlansScreen({ navigation }: Props) {
           setIapAvailable((products ?? []).length > 0);
         } catch (iapErr: any) {
           console.warn('[IAP] Init failed:', iapErr?.message);
-          // IAP unavailable — still show plans, purchases will surface Apple's own error
           setIapAvailable(false);
+        } finally {
+          setIapLoading(false);
         }
       }
     };
@@ -84,21 +87,29 @@ export default function PlansScreen({ navigation }: Props) {
   /** Get the localized Apple price string for a plan, if available */
   const getApplePrice = (planName: string): string | null => {
     if (!iapAvailable) return null;
-    const productId = PRODUCT_IDS[planName as keyof typeof PRODUCT_IDS];
+    const normalizedPlanName = normalizePlanName(planName);
+    if (!normalizedPlanName || normalizedPlanName === 'free') return null;
+    const productId = PRODUCT_IDS[normalizedPlanName as keyof typeof PRODUCT_IDS];
     if (!productId) return null;
     const product = iapProducts.find((p) => p.productId === productId);
     return product?.price ?? null;
   };
 
   const handleSubscribe = async (planName: string) => {
-    if (planName === 'free') return;
-    setSubscribing(planName);
+    const normalizedPlanName = normalizePlanName(planName);
+    if (!normalizedPlanName || normalizedPlanName === 'free') return;
+    setSubscribing(normalizedPlanName);
     setError('');
 
     try {
       // iOS: always use Apple IAP, never Stripe
       if (Platform.OS === 'ios') {
-        const productId = PRODUCT_IDS[planName as keyof typeof PRODUCT_IDS];
+        if (iapLoading) {
+          Alert.alert('Please Wait', 'We are still loading App Store subscription products. Please try again in a moment.');
+          return;
+        }
+
+        const productId = PRODUCT_IDS[normalizedPlanName as keyof typeof PRODUCT_IDS];
         if (!productId) throw new Error('Unknown plan');
 
         // If products not loaded yet, attempt IAP init inline
@@ -132,13 +143,13 @@ export default function PlansScreen({ navigation }: Props) {
         // Verify receipt with backend to update plan in DB
         await verifyIAPReceipt(receipt, productId);
 
-        setCurrentPlan(planName);
-        Alert.alert('Success', `You're now on the ${planName} plan!`);
+        setCurrentPlan(normalizedPlanName);
+        Alert.alert('Success', `You're now on the ${normalizedPlanName} plan!`);
         return;
       }
 
       // Android/web: Stripe web checkout
-      const res = await subscribeToPlan(planName);
+      const res = await subscribeToPlan(normalizedPlanName);
       const url = res?.checkout_url || (res as any)?.data?.checkout_url;
       if (!url) {
         Alert.alert('Error', 'Could not get checkout link. Please try again.');
@@ -198,19 +209,28 @@ export default function PlansScreen({ navigation }: Props) {
                   plan.name === 'free' ? 'Basic AI access' : 'Priority support',
                 ],
               }}
-              isCurrent={plan.name === currentPlan}
+              isCurrent={normalizePlanName(plan.name) === currentPlan}
               onSelect={() => handleSubscribe(plan.name)}
-              loading={subscribing === plan.name}
+              loading={subscribing === normalizePlanName(plan.name)}
+              disabled={Platform.OS === 'ios' && normalizePlanName(plan.name) !== 'free' && (iapLoading || !iapAvailable)}
+              buttonLabel={Platform.OS === 'ios' && normalizePlanName(plan.name) !== 'free' && iapLoading ? 'Loading App Store...' : undefined}
             />
           );
         })}
 
         {Platform.OS === 'ios' && (
-          <Text style={styles.iapNote}>
-            Subscriptions auto-renew monthly unless cancelled at least 24 hours before the end of the current period.
-            Manage or cancel in Settings → Apple ID → Subscriptions.
-            Payment will be charged to your Apple ID account at confirmation of purchase.
-          </Text>
+          <>
+            {iapLoading ? (
+              <Text style={styles.iapStatus}>Loading App Store subscription options...</Text>
+            ) : !iapAvailable ? (
+              <Text style={styles.iapStatusError}>App Store subscriptions are currently unavailable on this device or review account.</Text>
+            ) : null}
+            <Text style={styles.iapNote}>
+              Subscriptions auto-renew monthly unless cancelled at least 24 hours before the end of the current period.
+              Manage or cancel in Settings → Apple ID → Subscriptions.
+              Payment will be charged to your Apple ID account at confirmation of purchase.
+            </Text>
+          </>
         )}
 
         <View style={styles.legalLinks}>
@@ -241,6 +261,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(239,68,68,0.1)',
     padding: 12,
     borderRadius: 10,
+  },
+  iapStatus: {
+    fontSize: 12,
+    color: '#A0A0B8',
+    textAlign: 'center',
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  iapStatusError: {
+    fontSize: 12,
+    color: '#F59E0B',
+    textAlign: 'center',
+    marginTop: 12,
+    marginBottom: 8,
   },
   iapNote: {
     fontSize: 11,

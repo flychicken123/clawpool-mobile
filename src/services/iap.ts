@@ -1,14 +1,14 @@
 import * as InAppPurchases from 'expo-in-app-purchases';
 import { Platform } from 'react-native';
 
-const PURCHASE_TIMEOUT_MS = 45000;
+const PURCHASE_TIMEOUT_MS = 15000;
 
 // Product IDs must match what's registered in App Store Connect
 // Bundle ID is com.clawpool.app, so product IDs follow the same prefix
 export const PRODUCT_IDS = {
   basic: 'org.hihired.clawpool.basic',
   pro: 'org.hihired.clawpool.pro',
-};
+} as const;
 
 export type IAPProduct = {
   productId: string;
@@ -18,6 +18,14 @@ export type IAPProduct = {
   priceAmountMicros: number;
   priceCurrencyCode: string;
 };
+
+export function normalizePlanName(planName: string | null | undefined): 'free' | 'basic' | 'pro' | '' {
+  const normalized = String(planName || '').trim().toLowerCase();
+  if (normalized === 'free' || normalized === 'basic' || normalized === 'pro') {
+    return normalized;
+  }
+  return '';
+}
 
 let iapConnected = false;
 let purchaseListenerRegistered = false;
@@ -131,7 +139,7 @@ export async function purchasePlan(productId: string): Promise<string> {
     const timeout = setTimeout(() => {
       if (pendingPurchase?.productId === productId) {
         clearPendingPurchase();
-        reject(new Error('Purchase timed out. Please try again.'));
+        reject(new Error('Purchase timed out while waiting for the App Store response. Please try again.'));
       }
     }, PURCHASE_TIMEOUT_MS);
 

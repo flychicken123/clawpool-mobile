@@ -13,6 +13,8 @@ interface PlanCardProps {
   isCurrent: boolean;
   onSelect: () => void;
   loading: boolean;
+  disabled?: boolean;
+  buttonLabel?: string;
 }
 
 export default function PlanCard({
@@ -20,6 +22,8 @@ export default function PlanCard({
   isCurrent,
   onSelect,
   loading,
+  disabled = false,
+  buttonLabel,
 }: PlanCardProps) {
   return (
     <View style={[styles.card, isCurrent && styles.currentCard]}>
@@ -35,15 +39,19 @@ export default function PlanCard({
         ))}
       </View>
       <TouchableOpacity
-        style={[styles.button, isCurrent && styles.currentButton]}
+        style={[
+          styles.button,
+          isCurrent && styles.currentButton,
+          disabled && !isCurrent && styles.disabledButton,
+        ]}
         onPress={onSelect}
-        disabled={isCurrent || loading}
+        disabled={isCurrent || loading || disabled}
       >
         {loading ? (
           <ActivityIndicator color="#FFF" />
         ) : (
           <Text style={styles.buttonText}>
-            {isCurrent ? 'Current Plan' : 'Subscribe'}
+            {isCurrent ? 'Current Plan' : buttonLabel || 'Subscribe'}
           </Text>
         )}
       </TouchableOpacity>
@@ -91,6 +99,9 @@ const styles = StyleSheet.create({
   },
   currentButton: {
     backgroundColor: '#3A3A4E',
+  },
+  disabledButton: {
+    backgroundColor: '#4B5563',
   },
   buttonText: {
     color: '#FFFFFF',

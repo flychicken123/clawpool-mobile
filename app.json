@@ -14,7 +14,7 @@
                  "ios":  {
                              "buildNumber":  "3",
                              "bundleIdentifier":  "com.clawpool.app",
-                             "supportsTablet":  false,
+                             "supportsTablet":  true,
                              "infoPlist":  {
                                                "ITSAppUsesNonExemptEncryption":  false,
                                                "NSCameraUsageDescription": "MyAI-pocket openclaw agent uses your camera to let you take photos for your profile picture or to share images with your AI assistant during conversations.",

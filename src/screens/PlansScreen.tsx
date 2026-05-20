@@ -27,7 +27,7 @@ import {
   initIAP,
   getProducts,
   purchasePlan,
-  disconnectIAP,
+  finishPurchasedTransaction,
   PRODUCT_IDS,
   normalizePlanName,
 } from '../services/iap';
@@ -79,8 +79,8 @@ export default function PlansScreen({ navigation }: Props) {
     load();
 
     return () => {
-      // Disconnect IAP on unmount
-      disconnectIAP().catch(() => {});
+      // Keep the StoreKit connection/listener alive while the app is open.
+      // Review sandbox callbacks can arrive after the Plans screen unmounts.
     };
   }, []);
 
@@ -140,8 +140,11 @@ export default function PlansScreen({ navigation }: Props) {
 
         const receipt = await purchasePlan(productId);
 
-        // Verify receipt with backend to update plan in DB
+        // Verify receipt with backend to update plan in DB before finishing
+        // the StoreKit transaction. This avoids a "success" transaction being
+        // finalized locally before our server has unlocked the subscription.
         await verifyIAPReceipt(receipt, productId);
+        await finishPurchasedTransaction(productId);
 
         setCurrentPlan(normalizedPlanName);
         Alert.alert('Success', `You're now on the ${normalizedPlanName} plan!`);
@@ -159,8 +162,8 @@ export default function PlansScreen({ navigation }: Props) {
     } catch (e: any) {
       if (e?.message === 'Purchase cancelled') {
         // User cancelled, no alert needed
-      } else if (e?.message?.includes('timed out')) {
-        Alert.alert('Purchase Timed Out', 'Apple did not return a purchase result in time. Please try again. If this is App Review, verify the sandbox review account can access the subscription product.');
+      } else if (e?.message?.includes('still processing')) {
+        Alert.alert('Purchase Processing', 'The App Store is still processing this purchase. If Apple already showed purchase successful, please wait a moment and reopen Plans to refresh your subscription.');
       } else {
         Alert.alert('Error', e.message || 'Failed to start checkout');
       }

@@ -29,10 +29,8 @@
                                  "versionCode":  1,
                                  "predictiveBackGestureEnabled":  false,
                                  "adaptiveIcon":  {
-                                                      "monochromeImage":  "./assets/android-icon-monochrome.png",
                                                       "backgroundColor":  "#0F0F1A",
-                                                      "backgroundImage":  "./assets/android-icon-background.png",
-                                                      "foregroundImage":  "./assets/android-icon-foreground.png"
+                                                      "foregroundImage":  "./assets/icon.png"
                                                   },
                                  "package":  "com.clawpool.app"
                              },
